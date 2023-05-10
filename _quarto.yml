@@ -24,7 +24,7 @@ book:
       chapters: 
         - intro.qmd
     - part: "UNIT 5"
-      chapters: 
+      chapters:
         - intro.qmd
     - part: "UNIT 6"
       chapters: 
