@@ -18,7 +18,7 @@ Carlin and Gelfand (1991) investigated the age (x) and length (y) of 27 captured
 
 Data provided by Ratkowsky (1983).
 
-Carlin, B. and Gelfand, B. (1991). An Iterative Monte Carlo Method for Nonconjugate Bayesian Analysis, Statistics and Computing, 1, (2), 119†128.
+Carlin, B. and Gelfand, B. (1991). An Iterative Monte Carlo Method for Nonconjugate Bayesian Analysis, Statistics and Computing,
 
 Ratkowsky, D. (1983). Nonlinear regression modeling: A unified practical approach. M. Dekker, NY, viii, 276 p.
 
