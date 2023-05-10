@@ -1,0 +1,89 @@
+# Taste of Cheese {.unnumbered}
+
+```{r, message=F, warning=F}
+library(cmdstanr)
+```
+
+Adapted from Unit 6:
+
+The data was downloaded from [here](https://www3.nd.edu/~busiforc/handouts/Data%20and%20Stories/multicollinearity/Cheese%20Taste/Cheddar%20Cheese%20Data.html) and there is a copy [here](../data/cheese.csv). If you wish to download the data, then right click and save the link as a csv file.
+
+## Problem Statement
+
+As cheddar cheese matures, a variety of chemical processes take place. The taste of matured cheese is related to the concentration of several chemicals in the final product. In a study of cheddar cheese from the LaTrobe Valley of Victoria, Australia, samples of cheese were analyzed for their chemical composition and were subjected to taste tests. Overall taste scores were obtained by combining the scores from several tasters.
+
+Can the score be predicted well by the predictors: `Acetic`, `H2S`, and `Lactic`?
+
+```{r}
+
+df <- read.csv(file.path('..', 'data', 'cheese.csv'), header = T, colClasses = c("NULL", NA, NA, NA, NA))
+
+# This data list will be passed into the stan model
+data_list <- list(
+  N = dim(df)[1],
+  acetic = df$Acetic,
+  h2s = df$H2S,
+  lactic = df$Lactic,
+  y = df$taste
+)
+```
+
+### Model
+
+```{r file_location, include=FALSE}
+cheese_stan <- file.path('stan_models/cheese.stan')
+```
+
+We will compile/build the stan model by running `cmdstan_model`. The `cheese_program` is the file path for the stan file, i.e. `../cheese.stan`.
+
+```{r, warning=FALSE, comment=NA, error=FALSE, message=FALSE}
+mod <- cmdstan_model(cheese_stan)
+```
+
+Now that we have compiled our stan file, we can print out the model:
+
+```{r print_model}
+mod$print()
+```
+
+### Sampling
+
+Now that we have created the model above and compiled the stan program, we can start sampling.
+
+```{r, message=F, warning=F, results='hide'}
+fit <- mod$sample(
+  data = data_list,
+  seed = 1,
+  chains = 4,
+  parallel_chains = 4,
+  refresh = 500,   # print update every 500 iterations
+  iter_warmup = 1000,
+  iter_sampling = 5000   # iterate 5,000 times
+)
+```
+
+```{r, comment=NA}
+fit$summary(variables = c('b0', 'b1', 'b2', 'b3', 'tau'))
+```
+
+The results are pretty close to OpenBUGS.
+
+### Predictions
+
+In order to get the predictions, we will just need to pass in a new list of parameters with the predicted value
+
+```{r, message=F, warning=F, results='hide'}
+pred_data <- list(
+  N = 1,
+  acetic = 5.0,
+  h2s = 7.1,
+  lactic = 1.5,
+  y = 0 # We don't care what the value is for this because we are just trying to predict
+)
+
+pred <- mod$generate_quantities(fitted_params = fit, data = pred_data)
+```
+
+```{r}
+print(pred)
+```

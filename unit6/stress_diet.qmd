@@ -1,0 +1,99 @@
+# Stress, Diet, and Plasma Acids {.unnumbered}
+
+```{r, message=F, warning=F}
+library(cmdstanr)
+```
+
+This example introduces tracking of deterministic variables and shows how to recreate the BUGS step function in Stan.
+
+It is adapted from [Unit 6: stressacids.odc](../odc_files/unit6/stressacids.odc).
+
+Associated lecture video: Unit 6 lesson 5
+
+## Problem Statement
+
+In the study [Interrelationships Between Stress, Dietary Intake, and Plasma Ascorbic Acid During Pregnancy](https://vtechworks.lib.vt.edu/handle/10919/74486) conducted at the Virginia Polytechnic Institute and State University, the plasma ascorbic acid levels of pregnant women were compared for smokers versus non-smokers. Thirty-two women in the last three months of pregnancy, free of major health disorders, and ranging in age from 15 to 32 years were selected for the study. Prior to the collection of 20 ml of blood, the participants were told to avoid breakfast, forego their vitamin supplements, and avoid foods high in ascorbic acid content. From the blood samples, the plasma ascorbic acid values of each subject were determined in milligrams per 100 milliliters.
+
+------------------------------------------------------------------------
+
+I start with the data pasted from `stressacids.odc`, then create one list for smokers and one for nonsmokers.
+
+```{r input_data}
+plasma <- c(0.97, 0.72, 1.00, 0.81, 0.62, 1.32, 1.24, 0.99, 0.90, 0.74,
+          0.88, 0.94, 1.06, 0.86, 0.85, 0.58, 0.57, 0.64, 0.98, 1.09,
+          0.92, 0.78, 1.24, 1.18, 0.48, 0.71, 0.98, 0.68, 1.18, 1.36,
+          0.78, 1.64)
+
+smo <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
+       1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2)
+
+nonsmoker_index <- which(smo == 1)
+plasma_smokers <- plasma[-nonsmoker_index]
+plasma_nonsmokers <- plasma[nonsmoker_index]
+```
+
+### BUGS `step` function
+
+BUGS defines the step function like this:
+
+$$
+step(e) = \left\{
+\begin{array}{rl}
+  1, &\; e \geq 0\\
+  0, &\; \text{otherwise}
+\end{array}\right.
+$$
+
+Stan follows what you would expect in a programming language. We implement this like:
+
+`e >= 0 ? 1 : 0;`
+
+### How do I track non-random variables in Stan?
+
+One nice thing about BUGS is you can easily track both deterministic and non-deterministic variables while sampling. For Stan, you add the variable to the `generated quantities` block.
+
+```{r file_location, include=FALSE}
+stress_diet_stan <- file.path('stan_models/stress_diet.stan')
+```
+
+```{r, warning=FALSE, comment=NA, error=FALSE, message=FALSE}
+mod <- cmdstan_model(stress_diet_stan)
+```
+
+### Stress, Diet, and Plasma Acids Model
+
+```{r print_model, echo=FALSE}
+mod$print()
+```
+
+### Sampling
+
+Let us prepare the data to be passed into sample
+
+```{r}
+input_data <- list(N_smoker=length(plasma_smokers), 
+                   N_nonsmoker=length(nonsmoker_index),
+                   plasma_smoker=plasma_smokers,
+                   plasma_nonsmoker=plasma_nonsmokers
+)
+```
+
+Now that we have the data to pass into our sampling, let's proceed.
+
+```{r sampling, message=F, warning=F, results='hide'}
+fit <- mod$sample(
+  data = input_data,
+  seed = 123,
+  chains = 4,
+  parallel_chains = 4,
+  refresh = 500,   # print update every 500 iterations
+  iter_warmup = 1000,
+  iter_sampling = 5000
+)
+```
+
+```{r, comment=NA}
+fit$summary()
+```
+
+These results are very similar to PyMC results.

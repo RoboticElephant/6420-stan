@@ -1,0 +1,66 @@
+project:
+  type: book
+
+book:
+  title: "ISYE 6420 - BUGS to Stan"
+  author: "Josh Blakely"
+  date: "2/15/2023"
+  image: bayeslogo.png
+  sidebar: 
+    logo: bayeslogo.png
+  #page-navigation: true
+  chapters:
+    - index.qmd
+    - part: "UNIT 1"
+      chapters: 
+        - about-class.qmd
+    - part: "UNIT 2"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 3"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 4"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 5"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 6"
+      chapters: 
+        - unit6/stress_diet.qmd
+        - unit6/dugongs.qmd
+        - unit6/equivalence.qmd
+        - unit6/psoriasis.qmd
+        - unit6/cheese.qmd
+        # - unit6/exponential1.qmd
+    - part: "UNIT 7"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 8"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 9"
+      chapters: 
+        - intro.qmd
+    - part: "UNIT 10"
+      chapters: 
+        - intro.qmd
+    #
+    #- intro.qmd
+    #- summary.qmd
+    #- references.qmd
+  page-footer: 
+    left: 
+      - text: "By Josh Blakely"
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+  pdf:
+    documentclass: scrreprt
+
+editor: visual
+
