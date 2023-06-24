@@ -1,14 +1,5 @@
-# Introduction
+# Placeholder {.unnumbered}
 
-This is a book created from markdown and executable code.
-
-See @knuth84 for additional discussion of literate programming.
-
-```{r}
-1 + 1
-```
-
-```         
-install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-install.packages("cmdstanr", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
-```
+:::{.callout-warning}
+I have not made it to this point, so this is currently just a placeholder. Please check back regularly as we are updating the files.
+:::
