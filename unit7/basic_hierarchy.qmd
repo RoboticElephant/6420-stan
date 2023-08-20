@@ -1,0 +1,83 @@
+# A Simple Hierarchical Model {.unnumbered}
+
+## INCOMPLETE
+
+```{r, message=F, warning=F}
+library(cmdstanr)
+```
+
+It is adapted from [Unit 7: basicheirarhy.odc](../odc_files/unit7/basicheirarhy.odc).
+
+Associated lecture video: Unit 7 lesson -
+
+## Problem Statement
+
+Suppose that in a cohort of `n` people `X` of them have a particular medical condition. The likelihood is  $[X \mid p] \sim Bin(n,p)$,  and population proportion `p` is the parameter of interest. You believe that the proportion is close to `1/2`, but not quite sure. The appropriate prior on `p` would be Beta $Be(k, k)$ for k positive integer; the prior is symmetric about  $\dfrac{k}{(k + k)} = \dfrac{1}{2}$, thus, $[p \mid k] \sim Be(k, k)$.   
+
+However, you are reluctant to specify `k` since this would specify the variance on `p` as $\dfrac{1}{(8k +4)}$. Instead you place a hyperprior on `k`, as geometric with parameter `r`, and hyperprior on `r` as $Be(2, 2)$.
+
+1) What is the Bayes estimator of `p` if $n = 5$ and $X = 3$?
+2) What are the Bayes estimators of `k` and `r`?
+
+### Input Data
+
+```{r}
+X <- c(1.0, 1.5, 1.5, 1.5, 2.5, 4.0, 5.0, 5.0, 7.0, 8.0, 8.5, 9.0, 9.5, 
+     9.5, 10.0, 12.0, 12.0, 13.0, 13.0, 14.5, 15.5, 15.5, 16.5, 17.0,
+     22.5, 29.0, 31.5)
+y <- c(1.80, 1.85, 1.87, -1, 2.02, 2.27, 2.15, 2.26, 2.47, 2.19, 2.26,
+     2.40, 2.39, 2.41, 2.50, 2.32, 2.32, 2.43, 2.47, 2.56, 2.65, 2.47,
+     2.64, 2.56, 2.70, 2.72, -1)
+```
+
+Stan imputes missing values differently from PyMC and Bugs. We have to pass in the indices for the missing values as well as the count of observed and missing values.
+
+```{r file_location, include=FALSE}
+dugongs_stan <- file.path('stan_models/dugongs.stan')
+```
+
+```{r, warning=FALSE, comment=NA, error=FALSE, message=FALSE}
+mod <- cmdstan_model(dugongs_stan)
+```
+
+now that we have compiled our stan file, we can print out the model that we will use for this:
+
+```{r print_model}
+mod$print()
+```
+
+### Sampling
+
+Let us prepare the data to be passed into sample
+
+```{r}
+# Initial data has `-1` where missing.
+idx.mis <- which(y == -1)
+idx.obs <- which(y != -1)
+
+input_data <- list(N_obs=length(idx.obs), N_mis=length(idx.mis),
+                  iy_obs=idx.obs, iy_mis=idx.mis,
+                  X=X,
+                  y_obs=y[idx.obs]
+)
+```
+
+Now that we have the data to pass into our sampling, let's proceed.
+
+```{r sampling, message=F, warning=F, results='hide'}
+fit <- mod$sample(
+  data = input_data,
+  seed = 123,
+  chains = 4,
+  parallel_chains = 4,
+  refresh = 500,   # print update every 500 iterations
+  iter_warmup = 1000,
+  iter_sampling = 5000
+)
+```
+
+```{r, comment=NA}
+fit$summary()
+```
+
+These results are very similar to PyMC results.

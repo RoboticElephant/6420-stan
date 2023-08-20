@@ -20,4 +20,4 @@ Any necessary data will either have a download link or, if the data is compact e
 
 # Plans
 
-As of June 2023, this is still a work in progress. I have been working through each unit trying to add the important information. Stan is heavily used from Unit 6 on, so that has been where my focus has been aligned.
+As of Summer 2023, this is still a work in progress. I have been working through each unit trying to add the important information. Stan is heavily used from Unit 6 on, so that has been where my focus has been aligned.

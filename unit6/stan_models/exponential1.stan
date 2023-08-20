@@ -21,6 +21,7 @@ transformed parameters {
 
 model {
   lambda ~ gamma(alpha, beta);
+  
   y_obs ~ exponential(lambda);
   y_cens ~ exponential(lambda);
 }

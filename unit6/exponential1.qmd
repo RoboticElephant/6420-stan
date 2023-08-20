@@ -1,5 +1,7 @@
 # Bartholomew (1957) for Type-1 Censoring {.unnumbered}
 
+<!-- https://mc-stan.org/docs/2_28/stan-users-guide/censored-data.html -->
+
 ```{r, message=F, warning=F}
 library(cmdstanr)
 ```
@@ -16,68 +18,39 @@ Associated lecture video: Unit 6 lesson 9
 
 ### Results of a life test on ten pieces of equipment
 
-
-
 The observations above are the result of a test on the lifespan of some piece of equipment. The test had to end on August 31, but items 2, 4, and 10 did not fail by that date (the values in parentheses are the eventual lifespans of those pieces of equipment, but they were not known on August 31). So all we know for the purposes of the experiment is that they worked for 72, 60, and 21 days, respectively, and that they will continue working for some unknown additional time period.
 
 The goal of the experiment is to provide a lifespan estimate. We could:
 
-1. Take the censored data as observed:
+1.  Take the censored data as observed:
 
-- Divide the total observed working time (308 days) and divide by the equipment count (10) to get an average lifetime of 308 for an estimate of 30.8 days.
-- Problem: underestimates actual average lifespan.
+-   Divide the total observed working time (308 days) and divide by the equipment count (10) to get an average lifetime of 308 for an estimate of 30.8 days.
+-   Problem: underestimates actual average lifespan.
 
-2. Ignore the equipment that didn’t fail:
+2.  Ignore the equipment that didn't fail:
 
-- Take mean lifetime of the pieces of equipment that broke within the experiment period for an estimate of 22.1 days.
-- Problems:selection bias, underestimates even more.
+-   Take mean lifetime of the pieces of equipment that broke within the experiment period for an estimate of 22.1 days.
+-   Problems:selection bias, underestimates even more.
 
-3. Use the classical method:
+3.  Use the classical method:
 
-- Maximum Likelihood Estimation (MLE) under an exponential model. Total observed lifetime divided by 7 (number of observed failures) for an estimate of 44.0 days.
-- Problem: small sample size.
+-   Maximum Likelihood Estimation (MLE) under an exponential model. Total observed lifetime divided by 7 (number of observed failures) for an estimate of 44.0 days.
+-   Problem: small sample size.
 
 The actual mean lifespan of all pieces of equipment was 38.8 days.
 
-
+### A Bayesian Approach
 
 ------------------------------------------------------------------------
 
 I start with the data pasted from `stressacids.odc`, then create one list for smokers and one for nonsmokers.
 
 ```{r input_data}
-plasma <- c(0.97, 0.72, 1.00, 0.81, 0.62, 1.32, 1.24, 0.99, 0.90, 0.74,
-          0.88, 0.94, 1.06, 0.86, 0.85, 0.58, 0.57, 0.64, 0.98, 1.09,
-          0.92, 0.78, 1.24, 1.18, 0.48, 0.71, 0.98, 0.68, 1.18, 1.36,
-          0.78, 1.64)
+observed <- c(2, NA, 51, NA, 33, 27, 14, 24, 4, NA)
+censored <- c(0, 72, 0, 60, 0, 0, 0, 0, 0, 21)
 
-smo <- c(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-       1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2)
 
-nonsmoker_index <- which(smo == 1)
-plasma_smokers <- plasma[-nonsmoker_index]
-plasma_nonsmokers <- plasma[nonsmoker_index]
 ```
-
-### BUGS `step` function
-
-BUGS defines the step function like this:
-
-$$
-step(e) = \left\{
-\begin{array}{rl}
-  1, &\; e \geq 0\\
-  0, &\; \text{otherwise}
-\end{array}\right.
-$$
-
-Stan follows what you would expect in a programming language. We implement this like:
-
-`e >= 0 ? 1 : 0;`
-
-### How do I track non-random variables in Stan?
-
-One nice thing about BUGS is you can easily track both deterministic and non-deterministic variables while sampling. For Stan, you add the variable to the `generated quantities` block.
 
 ```{r file_location, include=FALSE}
 exponential1_stan <- file.path('stan_models/exponential1.stan')
@@ -87,7 +60,7 @@ exponential1_stan <- file.path('stan_models/exponential1.stan')
 mod <- cmdstan_model(exponential1_stan)
 ```
 
-### Stress, Diet, and Plasma Acids Model
+### Type-1 Censoring Model
 
 ```{r print_model, echo=FALSE}
 mod$print()
@@ -98,10 +71,10 @@ mod$print()
 Let us prepare the data to be passed into sample
 
 ```{r}
-input_data <- list(N_smoker=length(plasma_smokers), 
-                   N_nonsmoker=length(nonsmoker_index),
-                   plasma_smoker=plasma_smokers,
-                   plasma_nonsmoker=plasma_nonsmokers
+input_data <- list(N_obs = sum(!is.na(observed)),
+                   N_cens = sum(is.na(observed)),
+                   y_obs = observed[!is.na(observed)],
+                   U = max(observed, na.rm = TRUE)
 )
 ```
 

@@ -34,8 +34,11 @@ book:
         - unit6/psoriasis.qmd
         - unit6/cheese.qmd
         # - unit6/exponential1.qmd
+        # - unit6/jeremy_zero_tricks.qmd
     - part: "UNIT 7"
       chapters: 
+        # - unit7/basic_hierarchy.qmd
+        - unit7/tas_mixture.qmd
         - intro.qmd
     - part: "UNIT 8"
       chapters: 
