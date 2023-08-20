@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISYE 6420 - BUGS to Stan - Psoriasis: Two Sample Problem - paired data</title>
+<title>ISYE 6420 - BUGS to Stan - Priors as Hidden Mixtures</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -93,8 +93,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../unit6/cheese.html" rel="next">
-<link href="../unit6/equivalence.html" rel="prev">
+<link href="../unit6/cheese.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -133,7 +132,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Psoriasis: Two Sample Problem - paired data</h1>
+      <h1 class="quarto-secondary-nav-title">Priors as Hidden Mixtures</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -264,7 +263,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../unit6/psoriasis.html" class="sidebar-item-text sidebar-link active">Psoriasis: Two Sample Problem - paired data</a>
+  <a href="../unit6/psoriasis.html" class="sidebar-item-text sidebar-link">Psoriasis: Two Sample Problem - paired data</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -284,7 +283,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../unit7/tas_mixture.html" class="sidebar-item-text sidebar-link">Priors as Hidden Mixtures</a>
+  <a href="../unit7/tas_mixture.html" class="sidebar-item-text sidebar-link active">Priors as Hidden Mixtures</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -348,9 +347,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link active" data-scroll-target="#problem-statement">Problem Statement</a></li>
-  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a>
+  <li><a href="#problem-statement" id="toc-problem-statement" class="nav-link active" data-scroll-target="#problem-statement">Problem Statement</a>
   <ul class="collapse">
+  <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
   <li><a href="#sampling" id="toc-sampling" class="nav-link" data-scroll-target="#sampling">Sampling</a></li>
   </ul></li>
   </ul>
@@ -361,7 +360,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Psoriasis: Two Sample Problem - paired data</h1>
+<h1 class="title d-none d-lg-block">Priors as Hidden Mixtures</h1>
 </div>
 
 
@@ -379,103 +378,90 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>This is our first example of hypothesis testing.</p>
-<p>It is adapted from <a href="../odc_files/unit6/psoriasis.odc">Unit 6: psoriasis.odc</a>.</p>
-<p>Associated lecture video: Unit 6 lesson 7</p>
+<p>It is adapted from <a href="../odc_files/unit7/tasmixture.odc">Unit 7: tasmixture.odc</a>.</p>
 <section id="problem-statement" class="level2">
 <h2 class="anchored" data-anchor-id="problem-statement">Problem Statement</h2>
-<p>Woo and McKenna (2003) investigated the effect of broadband ultraviolet B (UVB) therapy and topical calcipotriol cream used together on areas of psoriasis. One of the outcome variables is the Psoriasis Area and Severity Index (PASI), where a lower score is better.</p>
-<p>The PASI scores for 20 subjects are measured at baseline and after 8 treatments. Do these data provide sufficient evidence to indicate that the combination therapy reduces PASI scores?</p>
-<p>Classical Analysis:</p>
-<pre><code>d = baseline - after;
-n = length(d);
-dbar = mean(d);   dbar = 6.3550
-sdd = sqrt(var(d)); sdd = 4.9309
-tstat = dbar / (sdd / sqrt(n));  tstat = 5.7637
-
-Reject H_0 at the level alpha = 0.05 since the p_value = 0.00000744 &lt; 0.05
-
-95% CI is [4.0472, 8.6628]</code></pre>
-<p>See <a href="../unit6/stress_diet.html">Unit 6: Stress, Diet and Plasma Acids</a> to find out more about recreating the BUGS step function.</p>
+<p>We are comparing the Student T likelihood with Normal prior vs Normal likelihood with Gamma prior.</p>
+<section id="model" class="level3">
+<h3 class="anchored" data-anchor-id="model">Model</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>baseline <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">5.9</span>, <span class="fl">7.6</span>, <span class="fl">12.8</span>, <span class="fl">16.5</span>, <span class="fl">6.1</span>, <span class="fl">14.4</span>, <span class="fl">6.6</span>, <span class="fl">5.4</span>, <span class="fl">9.6</span>, <span class="fl">11.6</span> ,<span class="fl">11.1</span>, <span class="fl">15.6</span>, <span class="fl">9.6</span>, <span class="fl">15.2</span>, <span class="dv">21</span>, <span class="fl">5.9</span>, <span class="dv">10</span>, <span class="fl">12.2</span>, <span class="fl">20.2</span>, <span class="fl">6.2</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>after <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">5.2</span>, <span class="fl">12.2</span>, <span class="fl">4.6</span>, <span class="dv">4</span>, <span class="fl">0.4</span> , <span class="fl">3.8</span>, <span class="fl">1.2</span>, <span class="fl">3.1</span>, <span class="fl">3.5</span>, <span class="fl">4.9</span>, <span class="fl">11.1</span>, <span class="fl">8.4</span>, <span class="fl">5.8</span>, <span class="dv">5</span>, <span class="fl">6.4</span>, <span class="dv">0</span>, <span class="fl">2.7</span>, <span class="fl">5.1</span>, <span class="fl">4.8</span>, <span class="fl">4.2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(tas_mixture)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>now that we have compiled our stan file, we can print out the model that we will use for this:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(psoriasis_stan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>We do get a decent amount of warnings, but the model compiles and runs.</p>
-</section>
-<section id="model" class="level2">
-<h2 class="anchored" data-anchor-id="model">Model</h2>
-<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod<span class="sc">$</span><span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>// Psoriasis: Two Sample Problem - Paired Data
-data {
-  int&lt;lower=0&gt; N;
-  vector[N] baseline;
-  vector[N] after;
-}
-
-transformed data {
-  vector[N] diff = baseline - after;
+<pre><code>data {
+  real df;
+  real mu0;
+  real tau1;
+  real tau;
+  real X;
+  real Y;
 }
 
 parameters {
-  real mu;
+  real mu1;
+  real mu2;
   real prec;
 }
 
 transformed parameters {
-  real sigma = 1 / sqrt(prec);
-  real ph1;
-  ph1 = (mu &gt;= 0 ? 1 : 0);
+  real alpha = df / 2;
+  real beta = df / (2.0 * tau);
 }
 
 model {
-  mu ~ normal(0, 316);
-  prec ~ gamma(0.001, 0.001);
-
-  diff ~ normal(mu, sigma);
+  mu1 ~ student_t(df, mu0, tau);
+  X ~ normal(mu1, 1 / sqrt(tau1));
+  
+  prec ~ gamma(alpha, beta);
+  mu2 ~ normal(mu0, 1 / sqrt(prec));
+  Y ~ normal(mu2, 1 / sqrt(tau1));
 }</code></pre>
 </div>
 </div>
+</section>
 <section id="sampling" class="level3">
 <h3 class="anchored" data-anchor-id="sampling">Sampling</h3>
 <p>Let us prepare the data to be passed into sample</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>input_data <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">N=</span><span class="fu">length</span>(baseline), </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                   <span class="at">baseline=</span>baseline,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>                   <span class="at">after=</span>after</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>input_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> <span class="dv">6</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mu0 =</span> <span class="dv">6</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">tau1 =</span> <span class="dv">10</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">tau =</span> <span class="fl">0.4</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">X =</span> <span class="dv">10</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">Y =</span> <span class="dv">10</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now that we have the data to pass into our sampling, let’s proceed.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> input_data,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains =</span> <span class="dv">4</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">refresh =</span> <span class="dv">500</span>,   <span class="co"># print update every 500 iterations</span></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_warmup =</span> <span class="dv">1000</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_sampling =</span> <span class="dv">5000</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> input_data,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains =</span> <span class="dv">4</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">refresh =</span> <span class="dv">500</span>,   <span class="co"># print update every 500 iterations</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_warmup =</span> <span class="dv">1000</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_sampling =</span> <span class="dv">5000</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span><span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span><span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 10
-  variable     mean   median     sd    mad       q5      q95  rhat ess_bulk
-  &lt;chr&gt;       &lt;num&gt;    &lt;num&gt;  &lt;num&gt;  &lt;num&gt;    &lt;num&gt;    &lt;num&gt; &lt;num&gt;    &lt;num&gt;
-1 lp__     -39.2    -38.9    1.02   0.714  -41.2    -38.3     1.00    8495.
-2 mu         6.37     6.37   1.18   1.12     4.45     8.27    1.00    9440.
-3 prec       0.0411   0.0398 0.0133 0.0129   0.0218   0.0651  1.00    9661.
-4 sigma      5.14     5.01   0.893  0.814    3.92     6.78    1.00    9661.
-5 ph1        1        1      0      0        1        1      NA         NA 
-# ℹ 1 more variable: ess_tail &lt;num&gt;</code></pre>
+<pre><code># A tibble: 6 × 10
+  variable    mean  median    sd   mad       q5     q95  rhat ess_bulk ess_tail
+  &lt;chr&gt;      &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;    &lt;num&gt;   &lt;num&gt; &lt;num&gt;    &lt;num&gt;    &lt;num&gt;
+1 lp__     -13.1   -12.8   1.26  1.02  -15.6    -11.8    1.00    7497.    9707.
+2 mu1        9.83    9.83  0.323 0.321   9.29    10.4    1.00   13632.   11613.
+3 mu2        9.91    9.91  0.315 0.309   9.40    10.4    1.00   13427.   11235.
+4 prec       0.234   0.211 0.126 0.115   0.0701   0.475  1.00    8902.    6831.
+5 alpha      3       3     0     0       3        3     NA         NA       NA 
+6 beta       7.5     7.5   0     0       7.5      7.5   NA         NA       NA </code></pre>
 </div>
 </div>
-<p>These results are very similar to BUGS and <a href="https://areding.github.io/6420-pymc/unit6/Unit6-demo-psoriasis.html">PyMC results</a>.</p>
+<p>These results are very similar to PyMC results.</p>
 
 
 </section>
@@ -617,14 +603,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../unit6/equivalence.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Equivalence of Generic and Brand-name Drugs</span>
+      <a href="../unit6/cheese.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Taste of Cheese</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../unit6/cheese.html" class="pagination-link">
-        <span class="nav-page-text">Taste of Cheese</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->
