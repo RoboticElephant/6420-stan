@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>ISYE 6420 - BUGS to Stan - Taste of Cheese</title>
+<title>ISYE 6420 - BUGS to Stan - Coagulation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -93,8 +93,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../unit7/tas_mixture.html" rel="next">
-<link href="../unit6/psoriasis.html" rel="prev">
+<link href="../unit7/tas_mixture.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -133,7 +132,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title">Taste of Cheese</h1>
+      <h1 class="quarto-secondary-nav-title">Coagulation</h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -269,7 +268,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../unit6/cheese.html" class="sidebar-item-text sidebar-link active">Taste of Cheese</a>
+  <a href="../unit6/cheese.html" class="sidebar-item-text sidebar-link">Taste of Cheese</a>
   </div>
 </li>
       </ul>
@@ -289,7 +288,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../unit7/anovacoagulation.html" class="sidebar-item-text sidebar-link">Coagulation</a>
+  <a href="../unit7/anovacoagulation.html" class="sidebar-item-text sidebar-link active">Coagulation</a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -357,7 +356,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <ul class="collapse">
   <li><a href="#model" id="toc-model" class="nav-link" data-scroll-target="#model">Model</a></li>
   <li><a href="#sampling" id="toc-sampling" class="nav-link" data-scroll-target="#sampling">Sampling</a></li>
-  <li><a href="#predictions" id="toc-predictions" class="nav-link" data-scroll-target="#predictions">Predictions</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#plot-intervals" id="toc-plot-intervals" class="nav-link" data-scroll-target="#plot-intervals">Plot Intervals</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -367,7 +367,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block">Taste of Cheese</h1>
+<h1 class="title d-none d-lg-block">Coagulation</h1>
 </div>
 
 
@@ -383,119 +383,152 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </header>
 
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cmdstanr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bayesplot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Adapted from Unit 6:</p>
-<p>The data was downloaded from <a href="https://www3.nd.edu/~busiforc/handouts/Data%20and%20Stories/multicollinearity/Cheese%20Taste/Cheddar%20Cheese%20Data.html">here</a> and there is a copy <a href="../data/cheese.csv">here</a>. If you wish to download the data, then right click and save the link as a csv file.</p>
+<p>An example of Bayesian ANOVA</p>
+<p>It is adapted from <a href="../odc_files/unit7/anovacoagulation.odc">Unit 7: anovacoagulation.odc</a>.</p>
 <section id="problem-statement" class="level2">
 <h2 class="anchored" data-anchor-id="problem-statement">Problem Statement</h2>
-<p>As cheddar cheese matures, a variety of chemical processes take place. The taste of matured cheese is related to the concentration of several chemicals in the final product. In a study of cheddar cheese from the LaTrobe Valley of Victoria, Australia, samples of cheese were analyzed for their chemical composition and were subjected to taste tests. Overall taste scores were obtained by combining the scores from several tasters.</p>
-<p>Can the score be predicted well by the predictors: <code>Acetic</code>, <code>H2S</code>, and <code>Lactic</code>?</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">file.path</span>(<span class="st">'..'</span>, <span class="st">'data'</span>, <span class="st">'cheese.csv'</span>), <span class="at">header =</span> T, <span class="at">colClasses =</span> <span class="fu">c</span>(<span class="st">"NULL"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="cn">NA</span>))</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># This data list will be passed into the stan model</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>data_list <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="fu">dim</span>(df)[<span class="dv">1</span>],</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">acetic =</span> df<span class="sc">$</span>Acetic,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">h2s =</span> df<span class="sc">$</span>H2S,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">lactic =</span> df<span class="sc">$</span>Lactic,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> df<span class="sc">$</span>taste</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<p>Here 24 animals are randomly allocated to 4 different diets, but the numbers allocated to different diets are not the same. The coagulation time for blood is measured for each animal. Are the diet-based differences significant?</p>
+<p><a href="https://pages.stat.wisc.edu/~yxu/Teaching/16%20spring%20Stat602/%5bGeorge_E._P._Box,_J._Stuart_Hunter,_William_G._Hu(BookZZ.org).pdf">Box, Hunter, Hunter; Statistics for Experimenters, p.&nbsp;166</a></p>
 <section id="model" class="level3">
 <h3 class="anchored" data-anchor-id="model">Model</h3>
-<p>We will compile/build the stan model by running <code>cmdstan_model</code>. The <code>cheese_program</code> is the file path for the stan file, i.e.&nbsp;<code>../cheese.stan</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(cheese_stan)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">cmdstan_model</span>(anovacoagulation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Now that we have compiled our stan file, we can print out the model:</p>
+<p>As you can see, this isn’t the best implementation of this. It currently requires typing each variable multiple times. This could have loops, which would reduce having to type out each variable multiple times.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mod<span class="sc">$</span><span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mod<span class="sc">$</span><span class="fu">print</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>// The data that is input into the model
-data {
-  int&lt;lower=0&gt; N;
-  vector[N] acetic;
-  vector[N] h2s;
-  vector[N] lactic;
-  vector[N] y;
+<pre><code>data {
+  int&lt;lower=0&gt; N1;
+  int&lt;lower=0&gt; N2;
+  int&lt;lower=0&gt; N3;
+  int&lt;lower=0&gt; N4;
+  vector[N1] y1;
+  vector[N2] y2;
+  vector[N3] y3;
+  vector[N4] y4;
 }
 
 parameters {
-  real b0;               // Intercept coefficient
-  real b1;               // Slope coefficient
-  real b2;
-  real b3;
-  real tau;
+  real mu0;
+  real&lt;lower=0&gt; tau;
+  
+  real alpha4;
+  real alpha3;
+  real alpha2;
+}
+
+transformed parameters {
+  real alpha1 = -(alpha2 + alpha3 + alpha4);
+  real mu1 = mu0 + alpha1;
+  real mu2 = mu0 + alpha2;
+  real mu3 = mu0 + alpha3;
+  real mu4 = mu0 + alpha4;
 }
 
 model {
-  b0 ~ normal(0, 1 / sqrt(1e-5));
-  b1 ~ normal(0, 1 / sqrt(1e-5));
-  b2 ~ normal(0, 1 / sqrt(1e-5));
-  b3 ~ normal(0, 1 / sqrt(1e-5));
+  mu0 ~ normal(0, 1 / sqrt(0.0001));
   tau ~ gamma(0.001, 0.001);
   
-  y ~ normal(b0 + b1 * acetic + b2 * h2s + b3 * lactic, 1 / sqrt(tau));
+  alpha4 ~ normal(0, 1 / sqrt(0.0001));
+  alpha3 ~ normal(0, 1 / sqrt(0.0001));
+  alpha2 ~ normal(0, 1 / sqrt(0.0001));
+  
+  y1 ~ normal(mu1, 1 / sqrt(tau));
+  y2 ~ normal(mu2, 1 / sqrt(tau));
+  y3 ~ normal(mu3, 1 / sqrt(tau));
+  y4 ~ normal(mu4, 1 / sqrt(tau));
 }
 
 generated quantities {
-  array[N] real y_hat;
-  y_hat = normal_rng(b0 + b1 * acetic + b2 * h2s + b3 * lactic, 1 / sqrt(tau));
+  real onetwo = alpha1 - alpha2;
+  real onethree = alpha1 - alpha3;
+  real onefour = alpha1 - alpha4;
+  real twothree = alpha2 - alpha3;
+  real twofour = alpha2 - alpha4;
+  real threefour = alpha3 - alpha4;
 }</code></pre>
 </div>
 </div>
 </section>
 <section id="sampling" class="level3">
 <h3 class="anchored" data-anchor-id="sampling">Sampling</h3>
-<p>Now that we have created the model above and compiled the stan program, we can start sampling.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cut and pasted data from .odc file</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>times <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">62</span>, <span class="dv">60</span>, <span class="dv">63</span>, <span class="dv">59</span>, <span class="dv">63</span>, <span class="dv">67</span>, <span class="dv">71</span>, <span class="dv">64</span>, <span class="dv">65</span>, <span class="dv">66</span>, <span class="dv">68</span>, <span class="dv">66</span>, <span class="dv">71</span>, <span class="dv">67</span>, <span class="dv">68</span>, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>          <span class="dv">68</span>, <span class="dv">56</span>, <span class="dv">62</span>, <span class="dv">60</span>, <span class="dv">61</span>, <span class="dv">63</span>, <span class="dv">64</span>, <span class="dv">63</span>, <span class="dv">59</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>diets <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>          <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>, <span class="dv">4</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> times[diets <span class="sc">==</span> <span class="dv">1</span>]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> times[diets <span class="sc">==</span> <span class="dv">2</span>]</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>y3 <span class="ot">&lt;-</span> times[diets <span class="sc">==</span> <span class="dv">3</span>]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>y4 <span class="ot">&lt;-</span> times[diets <span class="sc">==</span> <span class="dv">4</span>]</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>input_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">N1 =</span> <span class="fu">length</span>(y1),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">N2 =</span> <span class="fu">length</span>(y2),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">N3 =</span> <span class="fu">length</span>(y3),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">N4 =</span> <span class="fu">length</span>(y4),</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">y1 =</span> y1,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">y2 =</span> y2,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">y3 =</span> y3,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">y4 =</span> y4</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now that we have the data to pass into our sampling, let’s proceed.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">sample</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data_list,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">1</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> input_data,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed =</span> <span class="dv">123</span>,</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains =</span> <span class="dv">4</span>,</span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parallel_chains =</span> <span class="dv">4</span>,</span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">refresh =</span> <span class="dv">500</span>,   <span class="co"># print update every 500 iterations</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_warmup =</span> <span class="dv">1000</span>,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_sampling =</span> <span class="dv">5000</span>   <span class="co"># iterate 5,000 times</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter_sampling =</span> <span class="dv">5000</span></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span><span class="fu">summary</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">'b0'</span>, <span class="st">'b1'</span>, <span class="st">'b2'</span>, <span class="st">'b3'</span>, <span class="st">'tau'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 10
-  variable      mean    median       sd      mad       q5     q95  rhat ess_bulk
-  &lt;chr&gt;        &lt;num&gt;     &lt;num&gt;    &lt;num&gt;    &lt;num&gt;    &lt;num&gt;   &lt;num&gt; &lt;num&gt;    &lt;num&gt;
-1 b0       -28.6     -28.6     20.6     20.3     -6.26e+1  4.76    1.00    7508.
-2 b1         0.262     0.232    4.68     4.59    -7.32e+0  7.89    1.00    7056.
-3 b2         3.92      3.91     1.30     1.29     1.78e+0  6.04    1.00    8871.
-4 b3        19.7      19.6      9.02     8.70     4.87e+0 34.4     1.00    9316.
-5 tau        0.00973   0.00949  0.00270  0.00267  5.75e-3  0.0145  1.00   11940.
-# ℹ 1 more variable: ess_tail &lt;num&gt;</code></pre>
-</div>
-</div>
-<p>The results are pretty close to OpenBUGS.</p>
 </section>
-<section id="predictions" class="level3">
-<h3 class="anchored" data-anchor-id="predictions">Predictions</h3>
-<p>In order to get the predictions, we will just need to pass in a new list of parameters with the predicted value</p>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">Results</h3>
+<p>Since we don’t care about all the values, we are going to select the specific ones we care about.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>pred_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">N =</span> <span class="dv">1</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">acetic =</span> <span class="fl">5.0</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">h2s =</span> <span class="fl">7.1</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lactic =</span> <span class="fl">1.5</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="dv">0</span> <span class="co"># We don't care what the value is for this because we are just trying to predict</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> mod<span class="sc">$</span><span class="fu">generate_quantities</span>(<span class="at">fitted_params =</span> fit, <span class="at">data =</span> pred_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span><span class="fu">summary</span>(<span class="fu">c</span>(<span class="st">"alpha4"</span>, <span class="st">"alpha3"</span>, <span class="st">"alpha2"</span>, <span class="st">"alpha1"</span>, <span class="st">"onetwo"</span>, <span class="st">"onethree"</span>, </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>              <span class="st">"onefour"</span>, <span class="st">"twothree"</span>, <span class="st">"twofour"</span>, <span class="st">"threefour"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> variable  mean median    sd   mad    q5   q95
- y_hat[1] 30.04  30.03 11.19 10.95 11.88 48.49</code></pre>
+<pre><code># A tibble: 10 × 10
+   variable     mean  median    sd   mad     q5    q95  rhat ess_bulk ess_tail
+   &lt;chr&gt;       &lt;num&gt;   &lt;num&gt; &lt;num&gt; &lt;num&gt;  &lt;num&gt;  &lt;num&gt; &lt;num&gt;    &lt;num&gt;    &lt;num&gt;
+ 1 alpha4    -3.01   -3.01   0.822 0.799 -4.36  -1.67   1.00   19167.   14643.
+ 2 alpha3     4.02    4.01   0.894 0.857  2.56   5.48   1.00   17767.   13792.
+ 3 alpha2     1.99    2.00   0.884 0.856  0.529  3.43   1.00   19997.   14321.
+ 4 alpha1    -3.00   -3.00   1.03  0.998 -4.69  -1.30   1.00   27457.   15674.
+ 5 onetwo    -4.99   -5.00   1.61  1.54  -7.67  -2.33   1.00   25684.   15976.
+ 6 onethree  -7.02   -7.00   1.62  1.58  -9.66  -4.37   1.00   23064.   15532.
+ 7 onefour    0.0144  0.0129 1.54  1.49  -2.52   2.52   1.00   24007.   16103.
+ 8 twothree  -2.03   -2.02   1.43  1.38  -4.41   0.311  1.00   17113.   12301.
+ 9 twofour    5.01    5.01   1.34  1.30   2.80   7.23   1.00   18883.   13018.
+10 threefour  7.03    7.03   1.36  1.32   4.81   9.28   1.00   17591.   13736.</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-intervals" class="level3">
+<h3 class="anchored" data-anchor-id="plot-intervals">Plot Intervals</h3>
+<p>Now that we have the draws from the model, we can use them to plot intervals.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"alpha4"</span>, <span class="st">"alpha3"</span>, <span class="st">"alpha2"</span>, <span class="st">"alpha1"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_intervals</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="anovacoagulation_files/figure-html/alphas_plot-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>fit<span class="sc">$</span><span class="fu">draws</span>(<span class="at">variables =</span> <span class="fu">c</span>(<span class="st">"mu1"</span>, <span class="st">"mu2"</span>, <span class="st">"mu3"</span>, <span class="st">"mu4"</span>, <span class="st">"onetwo"</span>, <span class="st">"onethree"</span>, </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                        <span class="st">"onefour"</span>, <span class="st">"twothree"</span>, <span class="st">"twofour"</span>, <span class="st">"threefour"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mcmc_intervals</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="anovacoagulation_files/figure-html/alphas_plot-2.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 
@@ -639,14 +672,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../unit6/psoriasis.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Psoriasis: Two Sample Problem - paired data</span>
+      <a href="../unit7/tas_mixture.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Priors as Hidden Mixtures</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../unit7/tas_mixture.html" class="pagination-link">
-        <span class="nav-page-text">Priors as Hidden Mixtures</span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

@@ -93,6 +93,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
+<link href="../unit7/anovacoagulation.html" rel="next">
 <link href="../unit6/cheese.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -288,6 +289,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../unit7/anovacoagulation.html" class="sidebar-item-text sidebar-link">Coagulation</a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../intro.html" class="sidebar-item-text sidebar-link">Placeholder</a>
   </div>
 </li>
@@ -424,7 +430,7 @@ model {
 </section>
 <section id="sampling" class="level3">
 <h3 class="anchored" data-anchor-id="sampling">Sampling</h3>
-<p>Let us prepare the data to be passed into sample</p>
+<p>We don’t technically need to send anything in. We could add the values to the <a href="https://mc-stan.org/docs/reference-manual/program-block-transformed-data.html">transformed data</a> block. For this I decided to pass in the value. Therefore, let us prepare the data to be passed into sample</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>input_data <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> <span class="dv">6</span>,</span>
@@ -608,6 +614,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="../unit7/anovacoagulation.html" class="pagination-link">
+        <span class="nav-page-text">Coagulation</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
