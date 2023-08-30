@@ -13,7 +13,8 @@ book:
     - index.qmd
     - part: "UNIT 1"
       chapters: 
-        - about-class.qmd
+        - unit1/about-class.qmd
+        - unit1/topics_covered.qmd
     - part: "UNIT 2"
       chapters: 
         - intro.qmd
@@ -41,7 +42,7 @@ book:
         - unit7/tas_mixture.qmd
         # - unit7/jeremymus.qmd
         - unit7/anovacoagulation.qmd
-        - intro.qmd
+        # - unit7/simvastatin.qmd
     - part: "UNIT 8"
       chapters: 
         - intro.qmd
@@ -55,6 +56,7 @@ book:
     #- intro.qmd
     #- summary.qmd
     #- references.qmd
+    # - latex_reference.qmd
   page-footer: 
     left: 
       - text: "By Josh Blakely"
