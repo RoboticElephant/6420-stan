@@ -39,6 +39,8 @@ book:
       chapters: 
         # - unit7/basic_hierarchy.qmd
         - unit7/tas_mixture.qmd
+        # - unit7/jeremymus.qmd
+        - unit7/anovacoagulation.qmd
         - intro.qmd
     - part: "UNIT 8"
       chapters: 

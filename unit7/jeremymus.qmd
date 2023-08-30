@@ -1,19 +1,27 @@
-# Priors as Hidden Mixtures {.unnumbered}
+# Jeremy's IQ with Normal Prior as a Scale Mixture of Uniforms {.unnumbered}
+## NOT WORKING DON'T PUBLISH
 
 ```{r, message=F, warning=F}
 library(cmdstanr)
 ```
 
-It is adapted from [Unit 7: tasmixture.odc](../odc_files/unit7/tasmixture.odc).
+It is adapted from [Unit 7: Jeremymus.odc](../odc_files/unit7/Jeremymus.odc).
 
 ## Problem Statement
 
-We are comparing the Student T likelihood with Normal prior vs Normal likelihood with Gamma prior.
+Any symmetric Unimodal distribution is a scale mixture of uniforms.
+
+$$\theta \mid  \mu, \sigma^2 \sim N(\mu, \sigma^2)$$
+is the same as
+$$\theta \mid \mu, \sigma^2, d \sim U(\mu - \sigma d^{1/2}, \mu + \sigma d^{1/2}$$
+$$d \sim Ga\left(\frac{3}{2}, \frac{1}{2}\right)$$
+If $d \sim Ga(3/2, s/2)$, $s < 1$ prior is heavy tails, $s > 1$ light tails.
+
 
 ### Model
 
 ```{r file_location, include=FALSE}
-tas_mixture <- file.path('stan_models/tas_mixture.stan')
+tas_mixture <- file.path('stan_models/jeremymus.stan')
 ```
 
 ```{r, warning=FALSE, comment=NA, error=FALSE, message=FALSE}
@@ -60,3 +68,4 @@ fit$summary()
 ```
 
 These results are very similar to PyMC results.
+
